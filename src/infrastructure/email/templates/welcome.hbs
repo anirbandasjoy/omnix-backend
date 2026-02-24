@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to {{appName}}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 30px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #667eea;
+      margin-top: 0;
+    }
+    .button {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 12px 30px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">{{appName}}</div>
+    </div>
+
+    <div class="content">
+      <h1>Welcome, {{userName}}! 👋</h1>
+
+      <p>Thank you for joining <strong>{{appName}}</strong>. Your account has been successfully created.</p>
+
+      <p>We're excited to have you on board. You can now:</p>
+
+      <ul>
+        <li>Manage your profile settings</li>
+        <li>Configure your security preferences</li>
+        <li>Access all features of our platform</li>
+      </ul>
+
+      <p>If you have any questions, feel free to reach out to our support team.</p>
+
+      <center><a href="{{appUrl}}" class="button">Get Started</a></center>
+    </div>
+
+    <div class="footer">
+      <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+      <p>This email was sent to {{email}} because you created an account.</p>
+    </div>
+  </div>
+</body>
+</html>
