@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bullmq';
 import { QUEUES } from '../../../core/queue/queues.constant';
+import type { EnvConfigFlat } from '../../../core/config';
 
 export interface EmailTemplate {
   to: string;
@@ -36,7 +37,7 @@ export enum EmailTemplateType {
 export class EmailService {
   constructor(
     @InjectQueue(QUEUES.EMAIL) private readonly emailQueue: Queue,
-    private readonly config: ConfigService,
+    private readonly configService: ConfigService<EnvConfigFlat>,
   ) {}
 
   async sendEmail(options: EmailTemplate): Promise<void> {
@@ -58,8 +59,8 @@ export class EmailService {
       template: EmailTemplateType.WELCOME,
       context: {
         userName,
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
-        appUrl: this.config.get('app.url', 'http://localhost:3000'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
+        appUrl: this.configService.getOrThrow<string>('APP.URL'),
       },
       priority: 3,
     });
@@ -79,7 +80,7 @@ export class EmailService {
         userName,
         verificationCode,
         expiresAt: expiresAt.toISOString(),
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
       },
       priority: 1, // High priority
     });
@@ -92,8 +93,8 @@ export class EmailService {
       template: EmailTemplateType.EMAIL_VERIFIED,
       context: {
         userName,
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
-        appUrl: this.config.get('app.url', 'http://localhost:3000'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
+        appUrl: this.configService.getOrThrow<string>('APP.URL'),
       },
       priority: 3,
     });
@@ -113,8 +114,8 @@ export class EmailService {
         userName,
         resetToken,
         expiresAt: expiresAt.toISOString(),
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
-        appUrl: this.config.get('app.url', 'http://localhost:3000'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
+        appUrl: this.configService.getOrThrow<string>('APP.URL'),
       },
       priority: 1, // High priority
     });
@@ -132,7 +133,7 @@ export class EmailService {
       context: {
         userName,
         changedAt: changedAt.toISOString(),
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
       },
       priority: 2,
     });
@@ -152,7 +153,7 @@ export class EmailService {
         userName,
         roleName,
         assignedBy,
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
       },
       priority: 4,
     });
@@ -170,7 +171,7 @@ export class EmailService {
       context: {
         userName,
         reason: reason || 'Violation of our terms of service',
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
       },
       priority: 2,
     });
@@ -183,7 +184,7 @@ export class EmailService {
       template: EmailTemplateType.ACCOUNT_DELETED,
       context: {
         userName,
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
       },
       priority: 3,
     });
@@ -207,7 +208,7 @@ export class EmailService {
         userName,
         ...loginDetails,
         time: loginDetails.time.toISOString(),
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
       },
       priority: 3,
     });
@@ -229,7 +230,7 @@ export class EmailService {
         userName,
         ...sessionDetails,
         time: sessionDetails.time.toISOString(),
-        appName: this.config.get('app.name', 'Auth2X Ultra'),
+        appName: this.configService.getOrThrow<string>('APP.NAME'),
       },
       priority: 4,
     });

@@ -19,6 +19,10 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesOfSwitch": false,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/types/*": ["./src/core/types/*"]
+    }
   }
 }

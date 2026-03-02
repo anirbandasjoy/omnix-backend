@@ -3,18 +3,22 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
+import type { EnvConfig } from '../config';
 
 @Module({
   imports: [
     ConfigModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get('jwt.accessTokenSecret'),
-        signOptions: {
-          expiresIn: config.get('jwt.accessTokenExpiration', '15m'),
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const envCfg = config.get<EnvConfig>('env')!;
+        return {
+          secret: envCfg.JWT.ACCESS.SECRET,
+          signOptions: {
+            expiresIn: envCfg.JWT.ACCESS.EXPIRATION,
+          },
+        };
+      },
     }),
   ],
   providers: [JwtAuthGuard, RolesGuard],

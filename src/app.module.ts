@@ -9,15 +9,7 @@ import { RolesGuard } from './core/guards/roles.guard';
 import { DatabaseModule } from './core/database';
 import { CacheModule } from './core/cache';
 import { QueueModule } from './core/queue';
-import {
-  appConfig,
-  databaseConfig,
-  redisConfig,
-  jwtConfig,
-  oauthConfig,
-  emailConfig,
-  awsConfig,
-} from './core/config';
+import { config, type EnvConfig } from './core/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { InfrastructureModule } from './infrastructure';
@@ -34,15 +26,7 @@ import { SystemModule } from './domains/system/system.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', `.env.${process.env.NODE_ENV || 'development'}`],
-      load: [
-        appConfig,
-        databaseConfig,
-        redisConfig,
-        jwtConfig,
-        oauthConfig,
-        emailConfig,
-        awsConfig,
-      ],
+      load: [config],
     }),
 
     // Throttling (Rate Limiting)
@@ -56,26 +40,30 @@ import { SystemModule } from './domains/system/system.module';
     // Email Module
     MailerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        transport: {
-          host: config.get<string>('email.host', 'smtp.gmail.com'),
-          port: config.get<number>('email.port', 587),
-          auth: {
-            user: config.get<string>('email.user'),
-            pass: config.get<string>('email.password'),
+      useFactory: (config: ConfigService) => {
+        const envCfg = config.get<EnvConfig>('env')!;
+        const smtp = envCfg.EMAIL.SMTP;
+        return {
+          transport: {
+            host: smtp.HOST,
+            port: smtp.PORT,
+            auth: {
+              user: smtp.USER,
+              pass: smtp.PASSWORD,
+            },
           },
-        },
-        defaults: {
-          from: `"${config.get<string>('email.fromName', 'Auth2X Ultra')}" <${config.get<string>('email.from')}>`,
-        },
-        template: {
-          dir: process.cwd() + '/src/infrastructure/email/templates',
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
+          defaults: {
+            from: `"${smtp.FROM_NAME}" <${smtp.FROM}>`,
           },
-        },
-      }),
+          template: {
+            dir: process.cwd() + '/src/infrastructure/email/templates',
+            adapter: new HandlebarsAdapter(),
+            options: {
+              strict: true,
+            },
+          },
+        };
+      },
     }),
 
     // Core modules

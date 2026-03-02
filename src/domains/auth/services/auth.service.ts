@@ -28,6 +28,7 @@ import { EmailService } from '../../../infrastructure/email/services/email.servi
 import { ActivityType } from '../../../core/enums';
 import { ActivityService } from '../../activity/services/activity.service';
 import { InjectDatabase } from '../../../core/database';
+import type { EnvConfigFlat } from '../../../core/config';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +42,7 @@ export class AuthService {
     private readonly refreshTokenRepo: RefreshTokenRepository,
     private readonly deviceRepo: DeviceRepository,
     private readonly jwtService: JwtService,
-    private readonly config: ConfigService,
+    private readonly configService: ConfigService<EnvConfigFlat>,
     private readonly emailService: EmailService,
     private readonly activityService: ActivityService,
     @InjectDatabase() private readonly db: NodePgDatabase<any>,
@@ -319,7 +320,7 @@ export class AuthService {
     let payload: any;
     try {
       payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: this.config.get<string>('jwt.refreshSecret'),
+        secret: this.configService.getOrThrow<string>('JWT.REFRESH.SECRET'),
       });
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
@@ -409,12 +410,16 @@ export class AuthService {
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(accessPayload, {
-        secret: this.config.get<string>('jwt.accessSecret'),
-        expiresIn: this.config.get<string>('jwt.accessExpiration', '15m'),
+        secret: this.configService.getOrThrow<string>('JWT.ACCESS.SECRET'),
+        expiresIn: this.configService.getOrThrow<string>(
+          'JWT.ACCESS.EXPIRATION',
+        ),
       }),
       this.jwtService.signAsync(refreshPayload, {
-        secret: this.config.get<string>('jwt.refreshSecret'),
-        expiresIn: this.config.get<string>('jwt.refreshExpiration', '7d'),
+        secret: this.configService.getOrThrow<string>('JWT.REFRESH.SECRET'),
+        expiresIn: this.configService.getOrThrow<string>(
+          'JWT.REFRESH.EXPIRATION',
+        ),
       }),
     ]);
 
@@ -621,7 +626,7 @@ export class AuthService {
     let payload: any;
     try {
       payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: this.config.get<string>('jwt.refreshSecret'),
+        secret: this.configService.getOrThrow<string>('JWT.REFRESH.SECRET'),
       });
     } catch {
       return null;

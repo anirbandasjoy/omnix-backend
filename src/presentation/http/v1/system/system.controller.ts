@@ -16,12 +16,13 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { ErrorResponseDto } from '../../../../shared/dto/common.dto';
+import type { EnvConfigFlat } from '../../../../core/config';
 
 @ApiTags('system')
 @ApiBearerAuth()
 @Controller('system')
 export class SystemController {
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly configService: ConfigService<EnvConfigFlat>) {}
 
   @Get('health')
   @Public()
@@ -43,7 +44,7 @@ export class SystemController {
       status: 'ok',
       timestamp,
       uptime: Math.floor(uptime),
-      version: this.config.get('app.version', '1.0.0'),
+      version: '1.0.0',
     };
   }
 
@@ -66,8 +67,8 @@ export class SystemController {
   })
   info(): SystemInfoResponseDto {
     return {
-      version: this.config.get('app.version', '1.0.0'),
-      environment: this.config.get('node.env', 'development'),
+      version: '1.0.0',
+      environment: this.configService.getOrThrow<string>('APP.NODE_ENV'),
       nodeVersion: process.version,
     };
   }
@@ -95,14 +96,9 @@ export class SystemController {
   getConfig() {
     return {
       features: {
-        registration:
-          this.config.get('features.registration', 'true') === 'true',
-        emailVerification:
-          this.config.get('features.emailVerification', 'true') === 'true',
-        oauthProviders: this.config.get<string[]>(
-          'features.oauthProviders',
-          [],
-        ),
+        registration: true,
+        emailVerification: true,
+        oauthProviders: ['google', 'github'],
       },
     };
   }

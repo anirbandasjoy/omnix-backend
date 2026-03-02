@@ -13,7 +13,7 @@ import { users } from './users.schema';
 import { devices } from './devices.schema';
 
 export const sessions = pgTable(
-  'sessions',
+  'user_sessions',
   {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id')

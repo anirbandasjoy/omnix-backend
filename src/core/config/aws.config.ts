@@ -1,9 +1,0 @@
-import { registerAs } from '@nestjs/config';
-
-export const awsConfig = registerAs('aws', () => ({
-  region: process.env.AWS_REGION || 'us-east-1',
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-  s3Bucket: process.env.AWS_S3_BUCKET || 'auth2x-avatars',
-  cdnUrl: process.env.AWS_CDN_URL || 'https://cdn.auth2x.com',
-}));

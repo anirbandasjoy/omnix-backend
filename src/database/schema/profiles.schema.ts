@@ -11,7 +11,7 @@ import { relations } from 'drizzle-orm';
 import { users } from './users.schema';
 
 export const profiles = pgTable(
-  'profiles',
+  'user_profiles',
   {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id')

@@ -8,6 +8,13 @@
       "when": 1771918143694,
       "tag": "0000_bright_boomerang",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772007668492,
+      "tag": "0001_complete_kang",
+      "breakpoints": true
     }
   ]
 }

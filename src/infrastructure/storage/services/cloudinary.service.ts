@@ -8,7 +8,6 @@
 /* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
 
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   v2 as cloudinary,
   UploadApiResponse,
@@ -50,19 +49,12 @@ export class CloudinaryService {
   private readonly cloudinary: typeof cloudinary;
   private readonly apiSecret: string;
 
-  constructor(private readonly config: ConfigService) {
+  constructor() {
     this.cloudinary = cloudinary;
-    this.apiSecret =
-      this.config.get(
-        'aws.apiSecret',
-        process.env.CLOUDINARY_API_SECRET || '',
-      ) || '';
+    this.apiSecret = process.env.CLOUDINARY_API_SECRET || '';
     this.cloudinary.config({
-      cloud_name: this.config.get(
-        'aws.cloudName',
-        process.env.CLOUDINARY_CLOUD_NAME,
-      ),
-      api_key: this.config.get('aws.apiKey', process.env.CLOUDINARY_API_KEY),
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: this.apiSecret,
       secure: true,
     });

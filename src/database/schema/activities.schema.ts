@@ -11,7 +11,7 @@ import { relations } from 'drizzle-orm';
 import { users } from './users.schema';
 
 export const activities = pgTable(
-  'activities',
+  'user_activities',
   {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id').references(() => users.id, {
