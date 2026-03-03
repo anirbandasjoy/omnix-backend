@@ -14,7 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { and, eq, sql } from 'drizzle-orm';
-import * as schema from '../../../database/schema';
+import * as schema from '../../../database/schemas';
 import { UserRepository } from '../../user/repositories/user.repository';
 import { IdentityRepository } from '../../user/repositories/identity.repository';
 import { ProfileRepository } from '../../user/repositories/profile.repository';

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { eq, and, sql } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { avatars, profiles } from '../../../database/schema';
+import { avatars, profiles } from '../../../database/schemas';
 import { CloudinaryService } from '../../../infrastructure/storage';
 import { InjectDatabase } from '../../../core/database';
 

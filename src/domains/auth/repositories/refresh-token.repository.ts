@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq, and, desc, sql, lt } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { refreshTokens } from '../../../database/schema';
+import { refreshTokens } from '../../../database/schemas';
 import { BaseRepository, InjectDatabase } from '../../../core/database';
 
 @Injectable()
