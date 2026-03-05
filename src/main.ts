@@ -17,25 +17,24 @@ import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
 import { QUEUES } from './core/queue/queues.constant';
 import { ZodValidationPipe } from 'nestjs-zod';
+import type { EnvConfigFlat } from './core/config';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
-  const config = app.get(ConfigService);
+  const configService = app.get<ConfigService<EnvConfigFlat>>(ConfigService);
 
   // Global prefix (exclude root routes)
-  const apiPrefix = config.get<string>('app.apiPrefix', 'api/v1');
+  const apiPrefix = configService.getOrThrow<string>('APP.API_PREFIX');
   app.setGlobalPrefix(apiPrefix, {
     exclude: ['health'],
   });
 
   // CORS
-  const corsOrigin = config.get<string>('app.cors.origin', '*');
-  const corsCredentials = config.get<boolean>('app.cors.credentials', false);
   app.enableCors({
-    origin: corsOrigin,
+    origin: configService.getOrThrow<string>('APP.CORS.ORIGIN'),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: corsCredentials,
+    credentials: configService.getOrThrow<boolean>('APP.CORS.CREDENTIALS'),
   });
 
   // Global pipes
@@ -85,16 +84,16 @@ async function bootstrap() {
 
   // Directly create a new Queue instance for Bull Board
   try {
-    const redisConfig = {
-      host: config.get<string>('redis.host', 'localhost'),
-      port: config.get<number>('redis.port', 6379),
-      password: config.get<string>('redis.password'),
-      db: config.get<number>('redis.db', 1),
+    const redisConnection = {
+      host: configService.getOrThrow<string>('REDIS.HOST'),
+      port: configService.getOrThrow<number>('REDIS.PORT'),
+      password: configService.getOrThrow<string>('REDIS.PASSWORD'),
+      db: configService.getOrThrow<number>('REDIS.DB'),
     };
 
     // Create a new queue instance for monitoring
     const emailQueue = new Queue(QUEUES.EMAIL, {
-      connection: redisConfig,
+      connection: redisConnection,
     });
 
     queuesToAdd.push(new BullMQAdapter(emailQueue));
@@ -115,7 +114,7 @@ async function bootstrap() {
     logger.warn('No queues registered for Bull Board UI');
   }
 
-  const port = config.get<number>('app.port', 3000);
+  const port = configService.getOrThrow<number>('APP.PORT');
   await app.listen(port);
 
   const baseUrl = `http://localhost:${port}`;
@@ -126,7 +125,7 @@ async function bootstrap() {
   logger.log('═'.repeat(60));
   logger.log(`📦 Base URL:           ${baseUrl}`);
   logger.log(
-    `🌍 Environment:        ${config.get<string>('app.nodeEnv', 'development')}`,
+    `🌍 Environment:        ${configService.getOrThrow<string>('APP.NODE_ENV')}`,
   );
   logger.log('');
   logger.log('📌 Important Endpoints:');
@@ -138,13 +137,12 @@ async function bootstrap() {
   logger.log(`   • System Info:       ${baseUrl}/${apiPrefix}/system/info`);
   logger.log('');
   logger.log('🔌 External Services:');
-  const redisHost = config.get<string>('redis.host', 'localhost');
-  const redisPort = config.get<number>('redis.port', 6379);
-  logger.log(`   • Redis:             redis://${redisHost}:${redisPort}`);
-  const dbHost = config.get<string>('database.host', 'localhost');
-  const dbPort = config.get<number>('database.port', 5432);
-  const dbName = config.get<string>('database.name', 'auth2x_ultra');
-  logger.log(`   • PostgreSQL:        ${dbHost}:${dbPort}/${dbName}`);
+  logger.log(
+    `   • Redis:             redis://${configService.getOrThrow<string>('REDIS.HOST')}:${configService.getOrThrow<number>('REDIS.PORT')}`,
+  );
+  logger.log(
+    `   • PostgreSQL:        ${configService.getOrThrow<string>('DATABASE.HOST')}:${configService.getOrThrow<number>('DATABASE.PORT')}/${configService.getOrThrow<string>('DATABASE.NAME')}`,
+  );
   logger.log('═'.repeat(60));
 }
 

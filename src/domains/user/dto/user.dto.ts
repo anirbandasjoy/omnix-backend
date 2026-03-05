@@ -1,7 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import type { users, identities, profiles } from '../../../database/schema';
+import type { users, identities, profiles } from '../../../database/schemas';
 import { OmitId, OmitTimestamps, OmitSensitive } from '../../../shared/types';
 import {
   buildResponseSchema,

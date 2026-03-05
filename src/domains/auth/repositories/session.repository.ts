@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq, and, desc, sql, lt } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { sessions } from '../../../database/schema';
+import { sessions } from '../../../database/schemas';
 import { BaseRepository, InjectDatabase } from '../../../core/database';
 
 type Session = typeof sessions.$inferSelect;

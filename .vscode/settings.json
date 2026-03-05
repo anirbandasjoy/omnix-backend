@@ -5,8 +5,10 @@
     "healthcheck",
     "ilike",
     "isready",
+    "lintstagedrc",
     "Millis",
     "pkill",
+    "schemaname",
     "sslmode",
     "uuidv"
   ]

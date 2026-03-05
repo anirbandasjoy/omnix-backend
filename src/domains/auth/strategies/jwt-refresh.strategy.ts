@@ -8,6 +8,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../services/auth.service';
+import type { EnvConfigFlat } from '../../../core/config';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -15,13 +16,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
   'jwt-refresh',
 ) {
   constructor(
-    private readonly config: ConfigService,
+    private readonly configService: ConfigService<EnvConfigFlat>,
     private readonly authService: AuthService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get('jwt.refreshSecret'),
+      secretOrKey: configService.getOrThrow<string>('JWT.REFRESH.SECRET'),
       passReqToCallback: true,
     });
   }

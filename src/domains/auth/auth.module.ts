@@ -14,6 +14,7 @@ import { AuthController } from '../../presentation/http/v1/auth/auth.controller'
 import { EmailModule } from '../../infrastructure/email';
 import { ActivityModule } from '../activity';
 import { UserModule } from '../user';
+import type { EnvConfig } from '../../core/config';
 
 @Module({
   imports: [
@@ -26,12 +27,15 @@ import { UserModule } from '../user';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get('jwt.accessTokenSecret'),
-        signOptions: {
-          expiresIn: config.get('jwt.accessTokenExpiration', '15m'),
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const envCfg = config.get<EnvConfig>('env')!;
+        return {
+          secret: envCfg.JWT.ACCESS.SECRET,
+          signOptions: {
+            expiresIn: envCfg.JWT.ACCESS.EXPIRATION,
+          },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

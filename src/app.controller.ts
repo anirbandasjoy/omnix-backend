@@ -2,12 +2,13 @@ import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppService } from './app.service';
 import { Public } from './core/decorators/public.decorator';
+import type { EnvConfigFlat } from './core/config';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly config: ConfigService,
+    private readonly configService: ConfigService<EnvConfigFlat>,
   ) {}
 
   @Get()
@@ -20,12 +21,8 @@ export class AppController {
   health() {
     const uptime = process.uptime();
 
-    // Get database and redis info
-    const dbHost = this.config.get<string>('database.host', 'localhost');
-    const dbPort = this.config.get<number>('database.port', 5432);
-    const dbName = this.config.get<string>('database.name', 'auth2x_ultra');
-    const redisHost = this.config.get<string>('redis.host', 'localhost');
-    const redisPort = this.config.get<number>('redis.port', 6379);
+    // Get typed config using dot notation
+    const apiPrefix = this.configService.getOrThrow<string>('APP.API_PREFIX');
 
     return {
       status: 'ok',
@@ -34,8 +31,8 @@ export class AppController {
         seconds: Math.floor(uptime),
         human: this.formatUptime(uptime),
       },
-      environment: process.env.NODE_ENV || 'development',
-      version: this.config.get<string>('app.version', '1.0.0'),
+      environment: this.configService.getOrThrow<string>('APP.NODE_ENV'),
+      version: '1.0.0',
       system: {
         nodeVersion: process.version,
         platform: process.platform,
@@ -53,17 +50,17 @@ export class AppController {
       connections: {
         database: {
           status: 'connected',
-          host: `${dbHost}:${dbPort}`,
-          database: dbName,
+          host: `${this.configService.getOrThrow<string>('DATABASE.HOST')}:${this.configService.getOrThrow<number>('DATABASE.PORT')}`,
+          database: this.configService.getOrThrow<string>('DATABASE.NAME'),
         },
         redis: {
           status: 'connected',
-          host: `${redisHost}:${redisPort}`,
+          host: `${this.configService.getOrThrow<string>('REDIS.HOST')}:${this.configService.getOrThrow<number>('REDIS.PORT')}`,
         },
       },
       api: {
-        prefix: this.config.get<string>('app.apiPrefix', 'api/v1'),
-        docs: `/api/v1/docs`,
+        prefix: apiPrefix,
+        docs: `/${apiPrefix}/docs`,
       },
     };
   }

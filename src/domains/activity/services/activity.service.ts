@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { lt } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { InjectDatabase } from '../../../core/database/decorators';
-import { activities } from '../../../database/schema';
+import { activities } from '../../../database/schemas';
 import { ActivityType } from '../../../core/enums';
 import { ActivityRepository } from '../repositories/activity.repository';
 

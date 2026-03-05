@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { permissions, rolePermissions } from '../../../database/schema';
+import { permissions, rolePermissions } from '../../../database/schemas';
 import { eq, or, like } from 'drizzle-orm';
 import { BaseRepository, InjectDatabase } from '../../../core/database';
 

@@ -5,7 +5,7 @@ import {
   rolePermissions,
   userRoles,
   permissions,
-} from '../../../database/schema';
+} from '../../../database/schemas';
 import { BaseRepository, InjectDatabase } from '../../../core/database';
 import { eq, and } from 'drizzle-orm';
 

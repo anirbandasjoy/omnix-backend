@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { identities } from '../../../database/schema';
+import { identities } from '../../../database/schemas';
 import { BaseRepository, InjectDatabase } from '../../../core/database';
 import { IdentityProvider } from '../../../core/enums';
 import { PasswordUtil } from '../../../core/utils';
