@@ -13,6 +13,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { AuthController } from '../../presentation/http/v1/auth/auth.controller';
 import { EmailModule } from '../../infrastructure/email';
 import { ActivityModule } from '../activity';
+import { AuditModule } from '../audit';
 import { UserModule } from '../user';
 import type { EnvConfig } from '../../core/config';
 
@@ -23,6 +24,7 @@ import type { EnvConfig } from '../../core/config';
     CacheModule,
     EmailModule,
     ActivityModule,
+    AuditModule,
     forwardRef(() => UserModule),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

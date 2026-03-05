@@ -9,5 +9,7 @@ export * from './access/access-permissions.sql';
 export * from './access/access-role-permissions.sql';
 export * from './access/access-user-roles.sql';
 export * from './user/user-activities.sql';
-export * from './asset/avatars.schema';
+export * from './asset/assets.schema';
 export * from './user/user-attributes.sql';
+export * from './audit/audit-logs.sql';
+export * from './enums/audit-enum.sql';

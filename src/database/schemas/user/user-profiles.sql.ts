@@ -10,7 +10,7 @@ import {
 import { relations } from 'drizzle-orm';
 import { User } from './users.sql';
 import { timestamps } from '../helpers';
-import { Asset } from '../asset/avatars.schema';
+import { Asset } from '../asset/assets.schema';
 import { GenderEnum } from '../enums/user-enum.sql';
 import {
   createInsertSchema,
