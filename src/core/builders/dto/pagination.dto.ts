@@ -6,7 +6,6 @@ export const PaginationQuerySchema = z.object({
     .number()
     .int()
     .min(1)
-    .optional()
     .default(1)
     .describe('Page number (1-based)'),
   pageSize: z.coerce
@@ -14,9 +13,13 @@ export const PaginationQuerySchema = z.object({
     .int()
     .min(0)
     .max(100)
-    .optional()
     .default(10)
     .describe('Number of items per page (0 for no limit)'),
 });
 
-export class PaginationQueryDto extends createZodDto(PaginationQuerySchema) {}
+export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
+
+export class PaginationQueryDto extends createZodDto(PaginationQuerySchema) {
+  readonly page!: number;
+  readonly pageSize!: number;
+}

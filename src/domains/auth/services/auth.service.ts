@@ -27,6 +27,7 @@ import { UserResponseDto } from '../../user/dto/user.dto';
 import { EmailService } from '../../../infrastructure/email/services/email.service';
 import { ActivityType } from '../../../core/enums';
 import { ActivityService } from '../../activity/services/activity.service';
+import { AuditService } from '../../audit/services/audit.service';
 import { InjectDatabase } from '../../../core/database';
 import type { EnvConfigFlat } from '../../../core/config';
 
@@ -45,6 +46,7 @@ export class AuthService {
     private readonly configService: ConfigService<EnvConfigFlat>,
     private readonly emailService: EmailService,
     private readonly activityService: ActivityService,
+    private readonly auditService: AuditService,
     @InjectDatabase() private readonly db: NodePgDatabase<any>,
   ) {}
 
@@ -159,6 +161,16 @@ export class AuthService {
     await this.activityService.log({
       userId: result.user.id,
       type: ActivityType.REGISTER,
+      action: 'user_registered',
+      description: 'User registered successfully',
+      metadata: { provider: 'email', deviceId: result.deviceId },
+      ipAddress: deviceInfo.ipAddress,
+      userAgent: deviceInfo.userAgent,
+    });
+
+    // Log audit event
+    await this.auditService.logAuthEvent({
+      userId: result.user.id,
       action: 'user_registered',
       description: 'User registered successfully',
       metadata: { provider: 'email', deviceId: result.deviceId },
@@ -302,6 +314,16 @@ export class AuthService {
       userAgent: deviceInfo.userAgent,
     });
 
+    // Log audit event
+    await this.auditService.logAuthEvent({
+      userId: user.id,
+      action: 'user_logged_in',
+      description: 'User logged in successfully',
+      metadata: { provider: identity[0].provider, deviceId: device.id },
+      ipAddress: deviceInfo.ipAddress,
+      userAgent: deviceInfo.userAgent,
+    });
+
     this.logger.log(`User logged in successfully: ${user.id}`);
 
     return {
@@ -369,6 +391,14 @@ export class AuthService {
       metadata: { deviceId: storedToken.deviceId },
     });
 
+    // Log audit event
+    await this.auditService.logAuthEvent({
+      userId: user.id,
+      action: 'token_refreshed',
+      description: 'User refreshed access token',
+      metadata: { deviceId: storedToken.deviceId },
+    });
+
     return { tokens };
   }
 
@@ -387,6 +417,14 @@ export class AuthService {
     await this.activityService.log({
       userId,
       type: ActivityType.LOGOUT,
+      action: 'user_logged_out',
+      description: 'User logged out',
+      metadata: { deviceId, logoutAllDevices },
+    });
+
+    // Log audit event
+    await this.auditService.logAuthEvent({
+      userId,
       action: 'user_logged_out',
       description: 'User logged out',
       metadata: { deviceId, logoutAllDevices },
@@ -508,6 +546,13 @@ export class AuthService {
       description: 'Email verified successfully',
     });
 
+    // Log audit event
+    await this.auditService.logAuthEvent({
+      userId,
+      action: 'email_verified',
+      description: 'Email verified successfully',
+    });
+
     return { success: true };
   }
 
@@ -536,6 +581,13 @@ export class AuthService {
     await this.activityService.log({
       userId: identity.userId,
       type: ActivityType.PASSWORD_RESET_REQUEST,
+      action: 'password_reset_requested',
+      description: 'Password reset requested',
+    });
+
+    // Log audit event
+    await this.auditService.logAuthEvent({
+      userId: identity.userId,
       action: 'password_reset_requested',
       description: 'Password reset requested',
     });
@@ -600,6 +652,13 @@ export class AuthService {
     await this.activityService.log({
       userId,
       type: ActivityType.PASSWORD_CHANGE,
+      action: 'password_changed',
+      description: 'Password changed successfully',
+    });
+
+    // Log audit event
+    await this.auditService.logAuthEvent({
+      userId,
       action: 'password_changed',
       description: 'Password changed successfully',
     });

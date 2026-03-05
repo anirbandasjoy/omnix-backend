@@ -1,21 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { activities } from '../../../database/schemas';
 import { BaseRepository, InjectDatabase } from '../../../core/database';
+import { UserActivities } from '@/database/schemas';
 
 @Injectable()
-export class ActivityRepository extends BaseRepository<any, typeof activities> {
+export class ActivityRepository extends BaseRepository<
+  any,
+  typeof UserActivities
+> {
   constructor(@InjectDatabase() db: NodePgDatabase<any>) {
-    super(db, activities);
+    super(db, UserActivities);
   }
 
   async findByUserId(userId: string, limit = 100, offset = 0) {
     return this.db
       .select()
-      .from(activities)
-      .where(eq(activities.userId, userId))
-      .orderBy(activities.createdAt)
+      .from(UserActivities)
+      .where(eq(UserActivities.userId, userId))
+      .orderBy(UserActivities.createdAt)
       .limit(limit)
       .offset(offset);
   }
@@ -23,9 +26,9 @@ export class ActivityRepository extends BaseRepository<any, typeof activities> {
   async findByType(type: string, limit = 100, offset = 0) {
     return this.db
       .select()
-      .from(activities)
-      .where(eq(activities.type, type))
-      .orderBy(activities.createdAt)
+      .from(UserActivities)
+      .where(eq(UserActivities.type, type))
+      .orderBy(UserActivities.createdAt)
       .limit(limit)
       .offset(offset);
   }

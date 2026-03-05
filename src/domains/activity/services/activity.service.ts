@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Injectable } from '@nestjs/common';
 import { lt } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { InjectDatabase } from '../../../core/database/decorators';
-import { activities } from '../../../database/schemas';
 import { ActivityType } from '../../../core/enums';
 import { ActivityRepository } from '../repositories/activity.repository';
+import { UserActivities } from '@/database/schemas';
 
 interface LogActivityOptions {
   userId?: string;
@@ -51,8 +50,8 @@ export class ActivityService {
   async getRecentActivities(limit = 50) {
     return this.db
       .select()
-      .from(activities)
-      .orderBy(activities.createdAt)
+      .from(UserActivities)
+      .orderBy(UserActivities.createdAt)
       .limit(limit);
   }
 
@@ -74,7 +73,7 @@ export class ActivityService {
 
     // Use lt for date comparison
     await this.db
-      .delete(activities)
-      .where(lt(activities.createdAt, cutoffDate));
+      .delete(UserActivities)
+      .where(lt(UserActivities.createdAt, cutoffDate));
   }
 }
